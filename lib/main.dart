@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:openlaundry/document_editor.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,31 +23,19 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.purple,
       ),
-      home: MyHomePage(title: 'OpenLaundry'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String? title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final _laundryDocumentSearchController = TextEditingController();
 
   void _incrementCounter() {
     setState(() {
@@ -68,32 +57,139 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+                decoration: BoxDecoration(color: Colors.purple),
+                child: Text(
+                  'OpenLaundry App',
+                  style: TextStyle(color: Colors.white),
+                )),
+            ListTile(
+              title: TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [Icon(Icons.dashboard), Text('Dashboard')],
+                  )),
+            ),
+            ListTile(
+              title: TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [Icon(Icons.group), Text('Users')],
+                  )),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title!),
+        title: Text('Dashboard'),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: RefreshIndicator(
           onRefresh: () async {},
-          child: ListView(
-            physics: AlwaysScrollableScrollPhysics(),
-            children: <Widget>[
-              Text(
-                'You have pushed the button this many times:',
-              ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-            ],
+          child: Container(
+            margin: EdgeInsets.only(left: 10, right: 10),
+            child: RefreshIndicator(
+                onRefresh: () async {},
+                child: ListView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: Text(
+                        'Documents',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Search: ',
+                            style: TextStyle(),
+                          ),
+                          Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Search Document',
+                                isDense: true,
+                              ),
+                              controller: _laundryDocumentSearchController,
+                            ),
+                          ),
+                          IconButton(icon: Icon(Icons.search), onPressed: () {})
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 5, bottom: 5),
+                      child: Divider(),
+                    ),
+                    ...(Iterable.generate(100)
+                        .map((n) => GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => DocumentEditor(
+                                              uuid: '$n',
+                                            )));
+                              },
+                              child: Container(
+                                child: Card(
+                                  child: Container(
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            'Document ${DateTime(DateTime.now().year, DateTime.now().month, (DateTime.now().day + (n as int))).toString().substring(0, 10)}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Divider(),
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                              'Date: ${DateTime(DateTime.now().year, DateTime.now().month, (DateTime.now().day + (n as int))).toString().substring(0, 10)}'),
+                                        ),
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child:
+                                              Text('Total laundries: ${n + 1}'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ))
+                        .toList())
+                  ],
+                )),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => DocumentEditor()));
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
