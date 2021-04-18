@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:openlaundry/document_editor.dart';
+import 'package:openlaundry/app_state.dart';
+import 'package:openlaundry/main_component.dart';
+import 'package:openlaundry/model.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => AppState(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -34,165 +40,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  final _laundryDocumentSearchController = TextEditingController();
+  @override
+  void initState() {
+    _initApp();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    super.initState();
+  }
+
+  void _initApp() async {
+    final state = context.read<AppState>();
+    await state.initState();
+
+    // Data Populator
+
+    // await state.save<Customer>(
+    //     Customer(name: 'Test', phone: '0823909467', address: 'Jalan-Jalan'));
+
+    // await state.save<LaundryDocument>(LaundryDocument(
+    //     name: 'Test doc ${DateTime.now().toIso8601String()}',
+    //     date: DateTime.now().millisecondsSinceEpoch));
+
+    // await state.save<LaundryRecord>(LaundryRecord(
+    //   customerId: 1,
+    //   laundryDocumentId: 2,
+    //   weight: 6,
+    //   price: 10000,
+    //   type: 0,
+    //   start: DateTime.now().millisecondsSinceEpoch,
+    //   done: DateTime.now().millisecondsSinceEpoch,
+    // ));
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-                decoration: BoxDecoration(color: Colors.purple),
-                child: Text(
-                  'OpenLaundry App',
-                  style: TextStyle(color: Colors.white),
-                )),
-            ListTile(
-              title: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Row(
-                    children: [Icon(Icons.dashboard), Text('Dashboard')],
-                  )),
-            ),
-            ListTile(
-              title: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Row(
-                    children: [Icon(Icons.group), Text('Users')],
-                  )),
-            ),
-          ],
-        ),
-      ),
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text('Dashboard'),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: RefreshIndicator(
-          onRefresh: () async {},
-          child: Container(
-            margin: EdgeInsets.only(left: 10, right: 10),
-            child: RefreshIndicator(
-                onRefresh: () async {},
-                child: ListView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      child: Text(
-                        'Documents',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 10),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Search: ',
-                            style: TextStyle(),
-                          ),
-                          Expanded(
-                            child: TextField(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Search Document',
-                                isDense: true,
-                              ),
-                              controller: _laundryDocumentSearchController,
-                            ),
-                          ),
-                          IconButton(icon: Icon(Icons.search), onPressed: () {})
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 5, bottom: 5),
-                      child: Divider(),
-                    ),
-                    ...(Iterable.generate(100)
-                        .map((n) => GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => DocumentEditor(
-                                              uuid: '$n',
-                                            )));
-                              },
-                              child: Container(
-                                child: Card(
-                                  child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            'Document ${DateTime(DateTime.now().year, DateTime.now().month, (DateTime.now().day + (n as int))).toString().substring(0, 10)}',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        Divider(),
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                              'Date: ${DateTime(DateTime.now().year, DateTime.now().month, (DateTime.now().day + (n as int))).toString().substring(0, 10)}'),
-                                        ),
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          child:
-                                              Text('Total laundries: ${n + 1}'),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ))
-                        .toList())
-                  ],
-                )),
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => DocumentEditor()));
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+    return MainComponent();
   }
 }
