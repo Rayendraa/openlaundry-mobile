@@ -1,9 +1,11 @@
-# openlaundry (WIP)
+# openlaundry
+
+![openlaundry](assets/icon/icon.png)
 
 Open source laundry PoS management system
 
 ### Features
-- Works offline with cloud synchronization support if needed
+- Works offline with cloud synchronization support (WIP) if needed
 - Flutter codebase supports Android (binary release available) Web, and also iOS (codebase only)
 - Client-heavy app
 
