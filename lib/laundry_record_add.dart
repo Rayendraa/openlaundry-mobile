@@ -33,6 +33,10 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
       _laundryRecord?.price = 10000;
     }
 
+    if (_laundryRecord?.type == null) {
+      _laundryRecord?.type = 0;
+    }
+
     super.initState();
   }
 

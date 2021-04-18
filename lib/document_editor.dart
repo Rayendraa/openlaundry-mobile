@@ -290,7 +290,9 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                                 child: Text(
                                                   NumberFormat.currency(
                                                           locale: 'id-ID')
-                                                      .format(10000),
+                                                      .format(
+                                                          laundryRecord.price ??
+                                                              0),
                                                   style: TextStyle(
                                                       color: Colors.green,
                                                       fontWeight:
