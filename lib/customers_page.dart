@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:openlaundry/app_state.dart';
 import 'package:openlaundry/customers_add_page.dart';
 import 'package:openlaundry/model.dart';
@@ -11,6 +12,8 @@ class CustomersPage extends StatefulWidget {
 }
 
 class _CustomersPageState extends State<CustomersPage> {
+  final _customerSearch = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +32,30 @@ class _CustomersPageState extends State<CustomersPage> {
         margin: EdgeInsets.only(left: 10, right: 10),
         child: ListView(
           children: [
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: TextField(
+                controller: _customerSearch,
+                onChanged: (v) {
+                  setState(() {});
+                },
+                decoration: InputDecoration(
+                    isDense: true,
+                    border: OutlineInputBorder(),
+                    hintText: 'Search by name, phone, address'),
+              ),
+            ),
+            Divider(),
             Consumer<AppState>(builder: (ctx, state, child) {
               return Container(
                 margin: EdgeInsets.only(top: 10),
                 child: Column(
                   children: List<Customer>.from(
                           state.customers?.reversed ?? Iterable.empty())
+                      .where((customer) =>
+                          '${customer.name}${customer.phone}${customer.address}'
+                              .toLowerCase()
+                              .contains(_customerSearch.text.toLowerCase()))
                       .map((customer) {
                     final totalLaundries = state.laundryRecords
                             ?.where((laundryRecord) =>

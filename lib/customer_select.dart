@@ -14,6 +14,8 @@ class CustomerSelect extends StatefulWidget {
 }
 
 class _CustomerSelectState extends State<CustomerSelect> {
+  final _customerSearch = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,13 +24,29 @@ class _CustomerSelectState extends State<CustomerSelect> {
       ),
       body: Consumer<AppState>(builder: (ctx, state, child) {
         return Container(
+          margin: EdgeInsets.only(left: 10, right: 10),
           child: ListView(
             children: [
               Container(
                 margin: EdgeInsets.only(top: 10),
+                child: TextField(
+                  controller: _customerSearch,
+                  onChanged: (v) {
+                    setState(() {});
+                  },
+                  decoration: InputDecoration(
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                      hintText: 'Search by name, phone, address'),
+                ),
               ),
+              Divider(),
               ...List<Customer>.from(
                       state.customers?.reversed ?? Iterable.empty())
+                  .where((customer) =>
+                      '${customer.name}${customer.phone}${customer.address}'
+                          .toLowerCase()
+                          .contains(_customerSearch.text.toLowerCase()))
                   .map((customer) {
                 return Column(
                   children: [
