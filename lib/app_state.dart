@@ -49,7 +49,7 @@ class AppState with ChangeNotifier {
       }
     })();
 
-    if (tableStr != null) { 
+    if (tableStr != null) {
       try {
         final prefs = await SharedPreferences.getInstance();
         final tableContentsGzippedBase64String = prefs.getString(tableStr);
@@ -180,7 +180,8 @@ class AppState with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final customersGzipBase64String = prefs.getString("customers");
     final laundryRecordsGzipBase64String = prefs.getString("laundryrecords");
-    final laundryDocumentsGzipBase64String = prefs.getString("laundryrecords");
+    final laundryDocumentsGzipBase64String =
+        prefs.getString("laundrydocuments");
 
     if (customersGzipBase64String != null && customersGzipBase64String != '') {
       print(
