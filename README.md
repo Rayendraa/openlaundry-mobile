@@ -1,6 +1,6 @@
 # openlaundry
 
-![openlaundry](assets/icon/icon.png)
+<img src="assets/icon/icon.png" height="300" />
 
 Open source laundry PoS management system
 
