@@ -4,9 +4,9 @@ part 'model.g.dart';
 
 @JsonSerializable()
 class BaseModel {
-  BaseModel({this.id, this.createdAt, this.updatedAt});
+  BaseModel({this.uuid, this.createdAt, this.updatedAt});
 
-  int? id;
+  String? uuid;
   int? createdAt;
   int? updatedAt;
 
@@ -31,8 +31,8 @@ class Customer extends BaseModel {
 @JsonSerializable()
 class LaundryRecord extends BaseModel {
   LaundryRecord(
-      {this.customerId,
-      this.laundryDocumentId,
+      {this.customerUuid,
+      this.laundryDocumentUuid,
       this.weight,
       this.price,
       this.type,
@@ -40,8 +40,8 @@ class LaundryRecord extends BaseModel {
       this.done,
       this.received});
 
-  int? customerId;
-  int? laundryDocumentId;
+  String? customerUuid;
+  String? laundryDocumentUuid;
   double? weight;
   int? price;
   int? type; // 0 = cash, 1 = epay

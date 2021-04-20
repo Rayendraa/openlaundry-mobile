@@ -56,9 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
     // await state.save<Customer>(
     //     Customer(name: 'Test', phone: '0823909467', address: 'Jalan-Jalan'));
 
-    // await state.save<LaundryDocument>(LaundryDocument(
-    //     name: 'Test doc ${DateTime.now().toIso8601String()}',
-    //     date: DateTime.now().millisecondsSinceEpoch));
+    // for (var i = 0; i < 100; i++) {
+    //   await state.save<LaundryDocument>(LaundryDocument(
+    //       name: 'Test doc ${DateTime.now().toIso8601String()}',
+    //       date: DateTime.now().millisecondsSinceEpoch));
+    // }
 
     // await state.save<LaundryRecord>(LaundryRecord(
     //   customerId: 1,

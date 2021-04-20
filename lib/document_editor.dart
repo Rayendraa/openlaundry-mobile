@@ -28,7 +28,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
     _laundryDocument = LaundryDocument.fromJson(
         jsonDecode(jsonEncode(widget.laundryDocument)));
 
-    if (_laundryDocument?.id == null) {
+    if (_laundryDocument?.uuid == null) {
       setState(() {
         _documentNameController.text =
             'Doc ${makeReadableDateString(DateTime.now())}';
@@ -61,23 +61,23 @@ class _DocumentEditorState extends State<DocumentEditor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:
-          _laundryDocument?.id != null && _laundryDocument?.id != 0
-              ? FloatingActionButton(
-                  onPressed: () {
-                    final newLaundryRecord = LaundryRecord();
-                    newLaundryRecord.laundryDocumentId = _laundryDocument?.id;
+      floatingActionButton: _laundryDocument?.uuid != null &&
+              _laundryDocument?.uuid != ''
+          ? FloatingActionButton(
+              onPressed: () {
+                final newLaundryRecord = LaundryRecord();
+                newLaundryRecord.laundryDocumentUuid = _laundryDocument?.uuid;
 
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => LaundryRecordAdd(
-                                  laundryRecord: newLaundryRecord,
-                                )));
-                  },
-                  child: Icon(Icons.add),
-                )
-              : null,
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => LaundryRecordAdd(
+                              laundryRecord: newLaundryRecord,
+                            )));
+              },
+              child: Icon(Icons.add),
+            )
+          : null,
       appBar: AppBar(
         title: Text('Document Editor'),
         actions: [
@@ -158,8 +158,8 @@ class _DocumentEditorState extends State<DocumentEditor> {
                         builder: (ctx, state, child) {
                           final income = state.laundryRecords
                               ?.where((laundryRecord) =>
-                                  laundryRecord.laundryDocumentId ==
-                                  _laundryDocument?.id)
+                                  laundryRecord.laundryDocumentUuid ==
+                                  _laundryDocument?.uuid)
                               .map((laundryRecord) => laundryRecord.price ?? 0)
                               .fold(
                                   0,
@@ -192,22 +192,44 @@ class _DocumentEditorState extends State<DocumentEditor> {
                               state.laundryRecords?.reversed ??
                                   Iterable.empty())
                           .where((laundryRecord) =>
-                              laundryRecord.laundryDocumentId ==
-                              widget.laundryDocument?.id)
+                              laundryRecord.laundryDocumentUuid ==
+                              widget.laundryDocument?.uuid)
                           .map((laundryRecord) {
                     final foundCustomer = state.customers?.firstWhereOrNull(
-                      (customer) => customer.id == laundryRecord.customerId,
+                      (customer) => customer.uuid == laundryRecord.customerUuid,
                     );
 
                     return Column(
                       children: [
                         GestureDetector(
+                            onLongPress: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                        title: Text('Delete laundry record?'),
+                                        actions: [
+                                          Consumer<AppState>(
+                                            builder: (ctx, state, child) {
+                                              return TextButton(
+                                                child: Text('Yes'),
+                                                onPressed: () async {
+                                                  await state
+                                                      .delete<LaundryRecord>(
+                                                          laundryRecord.uuid);
+                                                  Navigator.pop(context);
+                                                },
+                                              );
+                                            },
+                                          )
+                                        ],
+                                      ));
+                            },
                             onTap: () {
                               final newLaundryRecord = LaundryRecord.fromJson(
                                   jsonDecode(jsonEncode(laundryRecord)));
 
-                              newLaundryRecord.laundryDocumentId =
-                                  _laundryDocument?.id;
+                              newLaundryRecord.laundryDocumentUuid =
+                                  _laundryDocument?.uuid;
 
                               Navigator.push(
                                   context,

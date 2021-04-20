@@ -59,13 +59,35 @@ class _CustomersPageState extends State<CustomersPage> {
                       .map((customer) {
                     final totalLaundries = state.laundryRecords
                             ?.where((laundryRecord) =>
-                                laundryRecord.customerId == customer.id)
+                                laundryRecord.customerUuid == customer.uuid)
                             .length ??
                         0;
 
                     return Column(
                       children: [
                         GestureDetector(
+                          onLongPress: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                      title: Text(
+                                          'Delete customer ${customer.name}?'),
+                                      actions: [
+                                        Consumer<AppState>(
+                                          builder: (ctx, state, child) {
+                                            return TextButton(
+                                              child: Text('Yes'),
+                                              onPressed: () async {
+                                                await state.delete<Customer>(
+                                                    customer.uuid);
+                                                Navigator.pop(context);
+                                              },
+                                            );
+                                          },
+                                        )
+                                      ],
+                                    ));
+                          },
                           onTap: () {
                             Navigator.push(
                                 context,

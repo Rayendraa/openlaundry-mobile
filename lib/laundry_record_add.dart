@@ -88,8 +88,8 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                                               '[Selected customer] ${customer.name}');
 
                                           setState(() {
-                                            _laundryRecord?.customerId =
-                                                customer.id;
+                                            _laundryRecord?.customerUuid =
+                                                customer.uuid;
                                           });
                                         },
                                       )));
@@ -100,13 +100,13 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                 ],
               ),
             ),
-            ...(_laundryRecord?.customerId != null
+            ...(_laundryRecord?.customerUuid != null
                 ? [
                     Consumer<AppState>(
                       builder: (ctx, state, child) {
                         final foundCustomer = state.customers?.firstWhereOrNull(
                             (customer) =>
-                                customer.id == _laundryRecord?.customerId);
+                                customer.uuid == _laundryRecord?.customerUuid);
 
                         return Container(
                           alignment: Alignment.centerLeft,

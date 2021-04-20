@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:openlaundry/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class AppState with ChangeNotifier {
   int selectedPage = 0;
@@ -29,8 +30,9 @@ class AppState with ChangeNotifier {
     return incrementedId;
   }
 
-  Future<int?> save<T extends BaseModel>(T item, {List<T>? batchData}) async {
-    int? incrementedId;
+  Future<String?> save<T extends BaseModel>(T item,
+      {List<T>? batchData}) async {
+    String? newUuid;
     print('[Item to save] ${jsonEncode(item)}');
 
     final tableStr = (() {
@@ -78,16 +80,16 @@ class AppState with ChangeNotifier {
             final data = batchData != null ? batchData : [item];
 
             await Future.wait(data.map((item) async {
-              if (item.id != null && item.id != 0) {
-                final i =
-                    decodedCustomers.indexWhere((itemX) => itemX.id == item.id);
+              if (item.uuid != null && item.uuid != '') {
+                final i = decodedCustomers
+                    .indexWhere((itemX) => itemX.uuid == item.uuid);
                 decodedCustomers[i] = item as Customer;
               } else {
-                item.id = await incrementId();
+                item.uuid = Uuid().v4();
                 decodedCustomers.add(item as Customer);
               }
 
-              incrementedId = item.id;
+              newUuid = item.uuid;
             }));
 
             customers = decodedCustomers;
@@ -108,17 +110,17 @@ class AppState with ChangeNotifier {
             final data = batchData != null ? batchData : [item];
 
             await Future.wait(data.map((item) async {
-              if (item.id != null && item.id != 0) {
+              if (item.uuid != null && item.uuid != '') {
                 final i = decodedLaundryRecords
-                    .indexWhere((itemX) => itemX.id == item.id);
+                    .indexWhere((itemX) => itemX.uuid == item.uuid);
 
                 decodedLaundryRecords[i] = item as LaundryRecord;
               } else {
-                item.id = await incrementId();
+                item.uuid = Uuid().v4();
                 decodedLaundryRecords.add(item as LaundryRecord);
               }
 
-              incrementedId = item.id;
+              newUuid = item.uuid;
             }));
 
             laundryRecords = decodedLaundryRecords;
@@ -138,20 +140,20 @@ class AppState with ChangeNotifier {
             final data = batchData != null ? batchData : [item];
 
             await Future.wait(data.map((item) async {
-              if (item.id != null && item.id != 0) {
+              if (item.uuid != null && item.uuid != '') {
                 final i = decodedLaundryDocuments
-                    .indexWhere((itemX) => itemX.id == item.id);
+                    .indexWhere((itemX) => itemX.uuid == item.uuid);
 
                 print('[Laundry document exists] i: $i');
 
                 decodedLaundryDocuments[i] = item as LaundryDocument;
               } else {
-                item.id = await incrementId();
+                item.uuid = Uuid().v4();
                 decodedLaundryDocuments.add(item as LaundryDocument);
               }
 
-              print('[Laundry document ID] ${item.id}');
-              incrementedId = item.id;
+              print('[Laundry document ID] ${item.uuid}');
+              newUuid = item.uuid;
             }));
 
             laundryDocuments = decodedLaundryDocuments;
@@ -171,9 +173,9 @@ class AppState with ChangeNotifier {
 
     notifyListeners();
 
-    print('[Saved ID] $incrementedId');
+    print('[Saved ID] $newUuid');
 
-    return incrementedId;
+    return newUuid;
   }
 
   Future<void> initState() async {
@@ -219,6 +221,119 @@ class AppState with ChangeNotifier {
     } else {
       prefs.setString('laundrydocuments',
           base64.encode(GZipCodec().encode(utf8.encode('[]'))));
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> delete<T extends BaseModel>(String? uuid) async {
+    print('[Item to delete] $uuid');
+
+    final tableStr = (() {
+      switch (T) {
+        case Customer:
+          return 'customers';
+
+        case LaundryRecord:
+          return 'laundryrecords';
+
+        case LaundryDocument:
+          return 'laundrydocuments';
+
+        default:
+          return null;
+      }
+    })();
+
+    if (tableStr != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final tableContentsGzippedBase64String = prefs.getString(tableStr);
+
+        final tableContentsBase64String =
+            tableContentsGzippedBase64String != null
+                ? GZipCodec()
+                    .decode(base64.decode(tableContentsGzippedBase64String))
+                : null;
+
+        if (tableContentsBase64String != null) {
+          final bytesStr = utf8.decode(tableContentsBase64String);
+
+          // CUSTOMERS TABLE
+          if (T == Customer) {
+            final decodedCustomers = (jsonDecode(bytesStr) as List<dynamic>)
+                .map((customerJson) => Customer.fromJson(customerJson))
+                .toList();
+
+            final i =
+                decodedCustomers.indexWhere((itemX) => itemX.uuid == uuid);
+
+            if (i != -1) {
+              decodedCustomers.removeAt(i);
+            }
+
+            customers = decodedCustomers;
+
+            prefs.setString(
+                tableStr,
+                base64.encode(GZipCodec()
+                    .encode(utf8.encode(jsonEncode(decodedCustomers)))));
+          }
+          // LAUNDRY RECORDS TABLE
+          else if (T == LaundryRecord) {
+            final decodedLaundryRecords =
+                (jsonDecode(bytesStr) as List<dynamic>)
+                    .map((laundryRecordJson) =>
+                        LaundryRecord.fromJson(laundryRecordJson))
+                    .toList();
+
+            final i =
+                decodedLaundryRecords.indexWhere((itemX) => itemX.uuid == uuid);
+
+            if (i != -1) {
+              decodedLaundryRecords.removeAt(i);
+            }
+
+            laundryRecords = decodedLaundryRecords;
+
+            prefs.setString(
+                tableStr,
+                base64.encode(GZipCodec()
+                    .encode(utf8.encode(jsonEncode(decodedLaundryRecords)))));
+          }
+          // LAUNDRY DOCUMENTS TABLE
+          else if (T == LaundryDocument) {
+            final decodedLaundryDocuments =
+                (jsonDecode(bytesStr) as List<dynamic>)
+                    .map((laundryDocumentJson) =>
+                        LaundryDocument.fromJson(laundryDocumentJson))
+                    .toList();
+
+            final i = decodedLaundryDocuments
+                .indexWhere((itemX) => itemX.uuid == uuid);
+
+            // print(
+            //     '[LaundryDocument delete] found index in ${decodedLaundryDocuments.length} records:  $tableStr $i $uuid');
+
+            if (i != -1) {
+              decodedLaundryDocuments.removeAt(i);
+            }
+
+            laundryDocuments = decodedLaundryDocuments;
+
+            prefs.setString(
+                tableStr,
+                base64.encode(GZipCodec()
+                    .encode(utf8.encode(jsonEncode(decodedLaundryDocuments)))));
+          } else {
+            throw 'Generic does not match any of the table type.';
+          }
+        }
+      } catch (e) {
+        print('[Save $tableStr error] $e');
+      }
+    } else {
+      print('[delete] Delete $tableStr error');
     }
 
     notifyListeners();

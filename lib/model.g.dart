@@ -8,14 +8,14 @@ part of 'model.dart';
 
 BaseModel _$BaseModelFromJson(Map<String, dynamic> json) {
   return BaseModel(
-    id: json['id'] as int?,
+    uuid: json['uuid'] as String?,
     createdAt: json['createdAt'] as int?,
     updatedAt: json['updatedAt'] as int?,
   );
 }
 
 Map<String, dynamic> _$BaseModelToJson(BaseModel instance) => <String, dynamic>{
-      'id': instance.id,
+      'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
     };
@@ -26,13 +26,13 @@ Customer _$CustomerFromJson(Map<String, dynamic> json) {
     phone: json['phone'] as String?,
     address: json['address'] as String?,
   )
-    ..id = json['id'] as int?
+    ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
     ..updatedAt = json['updatedAt'] as int?;
 }
 
 Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
-      'id': instance.id,
+      'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
       'name': instance.name,
@@ -42,8 +42,8 @@ Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
 
 LaundryRecord _$LaundryRecordFromJson(Map<String, dynamic> json) {
   return LaundryRecord(
-    customerId: json['customerId'] as int?,
-    laundryDocumentId: json['laundryDocumentId'] as int?,
+    customerUuid: json['customerUuid'] as String?,
+    laundryDocumentUuid: json['laundryDocumentUuid'] as String?,
     weight: (json['weight'] as num?)?.toDouble(),
     price: json['price'] as int?,
     type: json['type'] as int?,
@@ -51,7 +51,7 @@ LaundryRecord _$LaundryRecordFromJson(Map<String, dynamic> json) {
     done: json['done'] as int?,
     received: json['received'] as int?,
   )
-    ..id = json['id'] as int?
+    ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
     ..updatedAt = json['updatedAt'] as int?
     ..ePayId = json['ePayId'] as String?;
@@ -59,11 +59,11 @@ LaundryRecord _$LaundryRecordFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
-      'customerId': instance.customerId,
-      'laundryDocumentId': instance.laundryDocumentId,
+      'customerUuid': instance.customerUuid,
+      'laundryDocumentUuid': instance.laundryDocumentUuid,
       'weight': instance.weight,
       'price': instance.price,
       'type': instance.type,
@@ -78,14 +78,14 @@ LaundryDocument _$LaundryDocumentFromJson(Map<String, dynamic> json) {
     name: json['name'] as String?,
     date: json['date'] as int?,
   )
-    ..id = json['id'] as int?
+    ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
     ..updatedAt = json['updatedAt'] as int?;
 }
 
 Map<String, dynamic> _$LaundryDocumentToJson(LaundryDocument instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
       'name': instance.name,

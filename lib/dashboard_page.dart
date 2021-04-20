@@ -41,10 +41,12 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Container(
                   margin: EdgeInsets.only(top: 10),
-                  child: Text(
-                    'Documents',
-                    style: TextStyle(fontSize: 18),
-                  ),
+                  child: Consumer<AppState>(builder: (ctx, state, child) {
+                    return Text(
+                      'Documents (${state.laundryDocuments?.length ?? 0} records)',
+                      style: TextStyle(fontSize: 18),
+                    );
+                  }),
                 ),
                 // Consumer<AppState>(builder: (ctx, state, child) {
                 //   return Container(
@@ -119,7 +121,37 @@ class _DashboardPageState extends State<DashboardPage> {
                                   _laundryDocumentSearchController.text
                                       .toLowerCase()) ??
                               false)
-                          .map((laundryDocument) => GestureDetector(
+                          .toList()
+                          .asMap()
+                          .map((i, laundryDocument) => MapEntry(
+                              i,
+                              GestureDetector(
+                                onLongPress: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                            title: Text(
+                                                'Delete ${laundryDocument.name}?'),
+                                            actions: [
+                                              Consumer<AppState>(
+                                                  builder: (ctx, state, child) {
+                                                return TextButton(
+                                                  child: Text('Yes'),
+                                                  onPressed: () async {
+                                                    if (laundryDocument.uuid !=
+                                                        null) {
+                                                      await state.delete<
+                                                              LaundryDocument>(
+                                                          laundryDocument.uuid);
+                                                    }
+
+                                                    Navigator.pop(context);
+                                                  },
+                                                );
+                                              })
+                                            ],
+                                          ));
+                                },
                                 onTap: () {
                                   Navigator.push(
                                       context,
@@ -129,65 +161,74 @@ class _DashboardPageState extends State<DashboardPage> {
                                                     laundryDocument,
                                               )));
                                 },
-                                child: Container(
-                                  child: Card(
-                                    child: Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              laundryDocument.name ?? '',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                child: Column(children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.black12,
+                                              offset: Offset(3, 3),
+                                              blurRadius: 5,
+                                              spreadRadius: 5)
+                                        ]),
+                                    padding: EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            '${i + 1}. ${laundryDocument.name ?? 'No name'}',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                          Consumer<AppState>(
-                                            builder: (ctx, state, child) {
-                                              final income = state
-                                                  .laundryRecords
-                                                  ?.where((laundryRecord) =>
-                                                      laundryRecord
-                                                          .laundryDocumentId ==
-                                                      laundryDocument.id)
-                                                  .map((laundryRecord) =>
-                                                      laundryRecord.price ?? 0)
-                                                  .fold(
-                                                      0,
-                                                      (acc, laundryRecordPrice) =>
-                                                          (acc as int) +
-                                                          laundryRecordPrice);
+                                        ),
+                                        Consumer<AppState>(
+                                          builder: (ctx, state, child) {
+                                            final income = state.laundryRecords
+                                                ?.where((laundryRecord) =>
+                                                    laundryRecord
+                                                        .laundryDocumentUuid ==
+                                                    laundryDocument.uuid)
+                                                .map((laundryRecord) =>
+                                                    laundryRecord.price ?? 0)
+                                                .fold(
+                                                    0,
+                                                    (acc, laundryRecordPrice) =>
+                                                        (acc as int) +
+                                                        laundryRecordPrice);
 
-                                              return Container(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  'Total income: ${NumberFormat.currency(locale: 'id-ID').format(income ?? 0)}',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.green),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                          Divider(),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                                'Date: ${makeReadableDateString(DateTime.fromMillisecondsSinceEpoch(laundryDocument.date ?? 0))}'),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                                '${state.laundryRecords?.where((laundryRecord) => laundryRecord.laundryDocumentId == laundryDocument.id).length ?? 0} laundries'),
-                                          ),
-                                        ],
-                                      ),
+                                            return Container(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(
+                                                'Total income: ${NumberFormat.currency(locale: 'id-ID').format(income ?? 0)}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.green),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        Divider(),
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                              'Date: ${makeReadableDateString(DateTime.fromMillisecondsSinceEpoch(laundryDocument.date ?? 0))}'),
+                                        ),
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                              '${state.laundryRecords?.where((laundryRecord) => laundryRecord.laundryDocumentUuid == laundryDocument.uuid).length ?? 0} laundries'),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              ))
+                                  Container(
+                                    child: Divider(),
+                                  )
+                                ]),
+                              )))
+                          .values
                           .toList(),
                     );
                   },
