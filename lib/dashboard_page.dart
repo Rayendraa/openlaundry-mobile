@@ -215,11 +215,38 @@ class _DashboardPageState extends State<DashboardPage> {
                                           child: Text(
                                               'Date: ${makeReadableDateString(DateTime.fromMillisecondsSinceEpoch(laundryDocument.date ?? 0))}'),
                                         ),
-                                        Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                              '${state.laundryRecords?.where((laundryRecord) => laundryRecord.laundryDocumentUuid == laundryDocument.uuid).length ?? 0} laundries'),
-                                        ),
+                                        (() {
+                                          final foundLaundryRecords = state
+                                              .laundryRecords
+                                              ?.where((laundryRecord) =>
+                                                  laundryRecord
+                                                      .laundryDocumentUuid ==
+                                                  laundryDocument.uuid);
+
+                                          final successfulLaundries =
+                                              foundLaundryRecords
+                                                      ?.where((laundryRecord) =>
+                                                          laundryRecord
+                                                              .received !=
+                                                          null)
+                                                      .length ??
+                                                  0;
+
+                                          return Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              '$successfulLaundries/${foundLaundryRecords?.length ?? 0} laundries done',
+                                              style: TextStyle(
+                                                  color: (successfulLaundries) <
+                                                          (foundLaundryRecords
+                                                                  ?.length ??
+                                                              0)
+                                                      ? Colors.red
+                                                      : Colors.green,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          );
+                                        })(),
                                       ],
                                     ),
                                   ),

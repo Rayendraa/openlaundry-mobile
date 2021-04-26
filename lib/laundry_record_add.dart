@@ -294,14 +294,25 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                       )
                     ],
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(_laundryRecord?.start != null
-                        ? makeReadableDateTimeString(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                _laundryRecord!.start!))
-                        : 'None'),
-                  )
+                  Row(children: [
+                    Container(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _laundryRecord?.start = null;
+                            });
+                          },
+                          child: Text('Clear')),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_laundryRecord?.start != null
+                          ? makeReadableDateTimeString(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  _laundryRecord!.start!))
+                          : 'None'),
+                    )
+                  ]),
                 ],
               ),
             ),
@@ -338,14 +349,25 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                       )
                     ],
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(_laundryRecord?.done != null
-                        ? makeReadableDateTimeString(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                _laundryRecord!.done!))
-                        : 'None'),
-                  )
+                  Row(children: [
+                    Container(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _laundryRecord?.done = null;
+                            });
+                          },
+                          child: Text('Clear')),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_laundryRecord?.done != null
+                          ? makeReadableDateTimeString(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  _laundryRecord!.done!))
+                          : 'None'),
+                    )
+                  ]),
                 ],
               ),
             ),
@@ -383,14 +405,25 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                       )
                     ],
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(_laundryRecord?.received != null
-                        ? makeReadableDateTimeString(
-                            DateTime.fromMillisecondsSinceEpoch(
-                                _laundryRecord!.received!))
-                        : 'None'),
-                  )
+                  Row(children: [
+                    Container(
+                      child: TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _laundryRecord?.received = null;
+                            });
+                          },
+                          child: Text('Clear')),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(_laundryRecord?.received != null
+                          ? makeReadableDateTimeString(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                  _laundryRecord!.received!))
+                          : 'None'),
+                    )
+                  ]),
                 ],
               ),
             ),

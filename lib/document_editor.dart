@@ -380,13 +380,22 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                               ),
                                             ),
                                             Expanded(
-                                              child: Container(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(
-                                                  '${laundryRecord.start != null ? DateTime.fromMillisecondsSinceEpoch(laundryRecord.start ?? 0).toIso8601String() : 'Not Finished'}',
-                                                  style: TextStyle(
-                                                      color: Colors.grey[700]),
-                                                ),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Container(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                        '${laundryRecord.start != null ? DateTime.fromMillisecondsSinceEpoch(laundryRecord.start ?? 0).toIso8601String() : 'Not Finished'}',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .grey[700]),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                 
+                                                ],
                                               ),
                                             )
                                           ],
