@@ -32,7 +32,7 @@ class _MainComponentState extends State<MainComponent> {
             DrawerHeader(
                 decoration: BoxDecoration(color: Colors.purple),
                 child: Text(
-                  'OpenLaundry App',
+                  'OpenLaundry Mobile App',
                   style: TextStyle(color: Colors.white),
                 )),
             Consumer<AppState>(
