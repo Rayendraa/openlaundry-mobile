@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:openlaundry/app_state.dart';
+import 'package:openlaundry/backup_page.dart';
 import 'package:openlaundry/customers_page.dart';
 import 'package:openlaundry/dashboard_page.dart';
 import 'package:openlaundry/document_editor.dart';
@@ -65,6 +66,21 @@ class _MainComponentState extends State<MainComponent> {
                 );
               },
             ),
+            Consumer<AppState>(
+              builder: (ctx, state, child) {
+                return ListTile(
+                  title: TextButton(
+                      onPressed: () {
+                        state.setTitle('Backup');
+                        state.setSelectedPage(2);
+                        Navigator.pop(context);
+                      },
+                      child: Row(
+                        children: [Icon(Icons.backup), Text('Backup')],
+                      )),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -88,6 +104,11 @@ class _MainComponentState extends State<MainComponent> {
           case 1:
             {
               return CustomersPage();
+            }
+
+          case 2:
+            {
+              return BackupPage();
             }
 
           default:
