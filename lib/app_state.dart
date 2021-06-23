@@ -30,6 +30,58 @@ class AppState with ChangeNotifier {
     return incrementedId;
   }
 
+  Future<void> saveGeneric<T extends BaseModel>(T item,
+      {List<T>? batchData}) async {
+    String? newUuid;
+    print('[Item to save] ${jsonEncode(item)}');
+
+    final tableStr = (() {
+      switch (T) {
+        case Customer:
+          return 'customers';
+
+        case LaundryRecord:
+          return 'laundryrecords';
+
+        case LaundryDocument:
+          return 'laundrydocuments';
+
+        default:
+          return null;
+      }
+    })();
+
+    if (tableStr != null) {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final tableContentsGzippedBase64String = prefs.getString(tableStr);
+
+        final tableContentsBase64String =
+            tableContentsGzippedBase64String != null
+                ? GZipCodec()
+                    .decode(base64.decode(tableContentsGzippedBase64String))
+                : null;
+
+        if (tableContentsBase64String != null) {
+          final bytesStr = utf8.decode(tableContentsBase64String);
+
+          if (item.createdAt == null) {
+            item.createdAt = DateTime.now().millisecondsSinceEpoch;
+          }
+
+          item.updatedAt = DateTime.now().millisecondsSinceEpoch;
+
+          final decodedItems = (jsonDecode(bytesStr) as List<dynamic>)
+              .map((json) => (T as dynamic).fromJson(json))
+              .toList();
+
+          final data = batchData != null ? batchData : [item];
+        }
+      } catch (e) {}
+    }
+    return;
+  }
+
   Future<String?> save<T extends BaseModel>(T item,
       {List<T>? batchData}) async {
     String? newUuid;
