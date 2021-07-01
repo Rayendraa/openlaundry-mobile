@@ -23,6 +23,7 @@ class LaundryRecordAdd extends StatefulWidget {
 
 class _LaundryRecordAddState extends State<LaundryRecordAdd> {
   LaundryRecord? _laundryRecord;
+  final _noteController = TextEditingController();
 
   @override
   void initState() {
@@ -32,6 +33,8 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
     if (_laundryRecord?.price == null || _laundryRecord?.price == 0) {
       _laundryRecord?.price = 10000;
     }
+
+    _noteController.text = _laundryRecord?.note ?? '';
 
     if (_laundryRecord?.type == null) {
       _laundryRecord?.type = 0;
@@ -55,8 +58,10 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
               final state = context.read<AppState>();
 
               if (_laundryRecord != null) {
-                final savedLaundryRecordId =
-                    state.save<LaundryRecord>(_laundryRecord!);
+                // Map controller
+                _laundryRecord?.note = _noteController.text;
+
+                final savedLaundryRecordId = state.saveGeneric(_laundryRecord!);
               }
 
               Navigator.pop(context);
@@ -166,7 +171,7 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
             ),
             Container(
               child: Text(
-                  'Price: ${NumberFormat.currency(locale: 'id-ID').format(_laundryRecord?.price ?? 0)}'),
+                  'Price: ${NumberFormat.simpleCurrency(locale: 'id-ID').format(_laundryRecord?.price ?? 0)}'),
             ),
             Container(
               child: Divider(),
@@ -207,6 +212,92 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
               child: Divider(),
             ),
             Container(
+              child: Row(
+                children: [
+                  Expanded(
+                      child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _laundryRecord?.wash =
+                                  !(_laundryRecord?.wash ?? false);
+                            });
+                          },
+                          child: Container(
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: Text('Wash'),
+                                ),
+                                Container(
+                                  child: Checkbox(
+                                    value: _laundryRecord?.wash ?? false,
+                                    onChanged: (v) {
+                                      setState(() {
+                                        _laundryRecord?.wash = v;
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ))),
+                  Expanded(
+                      child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _laundryRecord?.dry =
+                                  !(_laundryRecord?.dry ?? false);
+                            });
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Text('Dry'),
+                              ),
+                              Container(
+                                child: Checkbox(
+                                  value: _laundryRecord?.dry ?? false,
+                                  onChanged: (v) {
+                                    setState(() {
+                                      _laundryRecord?.dry = v;
+                                    });
+                                  },
+                                ),
+                              )
+                            ],
+                          ))),
+                  Expanded(
+                      child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _laundryRecord?.iron =
+                                  !(_laundryRecord?.iron ?? false);
+                            });
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Text('Iron'),
+                              ),
+                              Container(
+                                child: Checkbox(
+                                  value: _laundryRecord?.iron ?? false,
+                                  onChanged: (v) {
+                                    setState(() {
+                                      _laundryRecord?.iron = v;
+                                    });
+                                  },
+                                ),
+                              )
+                            ],
+                          ))),
+                ],
+              ),
+            ),
+            Container(
+              child: Divider(),
+            ),
+            Container(
               margin: EdgeInsets.only(top: 10),
               child: Row(
                 children: [
@@ -230,9 +321,7 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                 ],
               ),
             ),
-            Container(
-              child: Divider(),
-            ),
+            Divider(),
             ...(_laundryRecord?.type == 1
                 ? [
                     Container(
@@ -264,6 +353,25 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                     ),
                   ]
                 : []),
+            Container(
+              child: Container(
+                child: Text('Note'),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: TextField(
+                controller: _noteController,
+                maxLines: null,
+                decoration: InputDecoration(
+                    isDense: true,
+                    border: OutlineInputBorder(),
+                    hintText: 'Note'),
+              ),
+            ),
+            Container(
+              child: Divider(),
+            ),
             Container(
               margin: EdgeInsets.only(top: 10),
               child: Column(

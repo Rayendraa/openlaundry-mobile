@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'model.g.dart';
@@ -23,7 +25,7 @@ class Customer extends BaseModel {
   String? phone;
   String? address;
 
-  factory Customer.fromJson(Map<String, dynamic> json) =>
+  static Customer fromJson(Map<String, dynamic> json) =>
       _$CustomerFromJson(json);
   Map<String, dynamic> toJson() => _$CustomerToJson(this);
 }
@@ -38,7 +40,11 @@ class LaundryRecord extends BaseModel {
       this.type,
       this.start,
       this.done,
-      this.received});
+      this.received,
+      this.wash,
+      this.dry,
+      this.iron,
+      this.note});
 
   String? customerUuid;
   String? laundryDocumentUuid;
@@ -49,8 +55,12 @@ class LaundryRecord extends BaseModel {
   int? done;
   int? received;
   String? ePayId;
+  bool? wash;
+  bool? dry;
+  bool? iron;
+  String? note;
 
-  factory LaundryRecord.fromJson(Map<String, dynamic> json) =>
+  static LaundryRecord fromJson(Map<String, dynamic> json) =>
       _$LaundryRecordFromJson(json);
   Map<String, dynamic> toJson() => _$LaundryRecordToJson(this);
 }
@@ -62,7 +72,7 @@ class LaundryDocument extends BaseModel {
   String? name;
   int? date;
 
-  factory LaundryDocument.fromJson(Map<String, dynamic> json) =>
+  static LaundryDocument fromJson(Map<String, dynamic> json) =>
       _$LaundryDocumentFromJson(json);
   Map<String, dynamic> toJson() => _$LaundryDocumentToJson(this);
 }

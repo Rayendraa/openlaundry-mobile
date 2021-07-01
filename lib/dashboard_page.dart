@@ -16,9 +16,9 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final _laundryDocumentSearchController = TextEditingController();
-  var _filterDate = false;
+  var _filterDate = true;
   var _filterDateFrom = DateTime(
-      DateTime.now().year, DateTime.now().month - 1, DateTime.now().day);
+      DateTime.now().year, DateTime.now().month, DateTime.now().day - 7);
   var _filterDateTo =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
@@ -44,6 +44,20 @@ class _DashboardPageState extends State<DashboardPage> {
             child: ListView(
               physics: AlwaysScrollableScrollPhysics(),
               children: [
+                // Container(
+                //   child: TextButton(
+                //     child: Text('Save'),
+                //     onPressed: () {
+                //       final state = context.read<AppState>();
+                //       final testCustomer =
+                //           Customer(name: 'Valian', address: 'Kota sutera');
+
+                //       state.saveGeneric(testCustomer);
+                //       // state.saveGeneric(testSaveNoFactory);
+                //     },
+                //   ),
+                // ),
+
                 Container(
                   margin: EdgeInsets.only(top: 10),
                   child: Consumer<AppState>(builder: (ctx, state, child) {
@@ -252,7 +266,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                                 Container(
                                   child: Text(
-                                    NumberFormat.currency(locale: 'id-ID')
+                                    NumberFormat.simpleCurrency(locale: 'id-ID')
                                         .format(income),
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
@@ -387,7 +401,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                             return Container(
                                               alignment: Alignment.centerLeft,
                                               child: Text(
-                                                'Total income: ${NumberFormat.currency(locale: 'id-ID').format(income ?? 0)}',
+                                                'Total income: ${NumberFormat.simpleCurrency(locale: 'id-ID').format(income ?? 0)}',
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.green),

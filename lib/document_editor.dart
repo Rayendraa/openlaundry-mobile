@@ -53,8 +53,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
     final state = context.read<AppState>();
 
     if (_laundryDocument != null) {
-      final savedLaundryDocumentId =
-          await state.save<LaundryDocument>(_laundryDocument!);
+      final savedLaundryDocumentId = await state.saveGeneric(_laundryDocument!);
     }
   }
 
@@ -167,7 +166,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                       (acc as int) + laundryRecordPrice);
 
                           return Text(
-                            NumberFormat.currency(locale: 'id-ID')
+                            NumberFormat.simpleCurrency(locale: 'id-ID')
                                 .format(income ?? 0),
                             style: TextStyle(
                                 color: Colors.green,
@@ -310,7 +309,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                                 alignment:
                                                     Alignment.centerRight,
                                                 child: Text(
-                                                  NumberFormat.currency(
+                                                  NumberFormat.simpleCurrency(
                                                           locale: 'id-ID')
                                                       .format(
                                                           laundryRecord.price ??
@@ -365,6 +364,36 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                           ],
                                         ),
                                       ),
+                                      ...(laundryRecord.note != null ||
+                                              laundryRecord.note != ''
+                                          ? [
+                                              Divider(),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                        alignment: Alignment
+                                                            .centerLeft,
+                                                        child: Text(
+                                                          'Note',
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        )),
+                                                    Container(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                          laundryRecord.note ??
+                                                              ''),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ]
+                                          : []),
                                       Divider(),
                                       Container(
                                         child: Row(
@@ -387,14 +416,13 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                                       alignment:
                                                           Alignment.centerLeft,
                                                       child: Text(
-                                                        '${laundryRecord.start != null ? DateTime.fromMillisecondsSinceEpoch(laundryRecord.start ?? 0).toIso8601String() : 'Not Finished'}',
+                                                        '${laundryRecord.start != null ? '${DateFormat.yMMMEd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(laundryRecord.start ?? 0).toLocal())} ${DateTime.fromMillisecondsSinceEpoch(laundryRecord.start ?? 0).toLocal().timeZoneName}' : 'Not Finished'}',
                                                         style: TextStyle(
                                                             color: Colors
                                                                 .grey[700]),
                                                       ),
                                                     ),
                                                   ),
-                                                 
                                                 ],
                                               ),
                                             )
@@ -419,7 +447,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                               child: Container(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
-                                                  '${laundryRecord.done != null ? DateTime.fromMillisecondsSinceEpoch(laundryRecord.done ?? 0).toIso8601String() : 'Not Finished'}',
+                                                  '${laundryRecord.done != null ? '${DateFormat.yMMMEd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(laundryRecord.done ?? 0).toLocal())} ${DateTime.fromMillisecondsSinceEpoch(laundryRecord.done ?? 0).toLocal().timeZoneName}' : 'Not Finished'}',
                                                   style: TextStyle(
                                                       color: Colors.grey[700]),
                                                 ),
@@ -446,7 +474,7 @@ class _DocumentEditorState extends State<DocumentEditor> {
                                               child: Container(
                                                 alignment: Alignment.centerLeft,
                                                 child: Text(
-                                                  '${laundryRecord.received != null ? DateTime.fromMillisecondsSinceEpoch(laundryRecord.received ?? 0).toIso8601String() : 'Not Finished'}',
+                                                  '${laundryRecord.received != null ? '${DateFormat.yMMMEd().add_jm().format(DateTime.fromMillisecondsSinceEpoch(laundryRecord.received ?? 0).toLocal())} ${DateTime.fromMillisecondsSinceEpoch(laundryRecord.received ?? 0).toLocal().timeZoneName}' : 'Not Finished'}',
                                                   style: TextStyle(
                                                       color: Colors.grey[700]),
                                                 ),
