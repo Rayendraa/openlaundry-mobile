@@ -59,6 +59,7 @@ class LaundryRecord extends BaseModel {
   bool? dry;
   bool? iron;
   String? note;
+  int? deletedAt;
 
   static LaundryRecord fromJson(Map<String, dynamic> json) =>
       _$LaundryRecordFromJson(json);

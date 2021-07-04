@@ -58,7 +58,8 @@ LaundryRecord _$LaundryRecordFromJson(Map<String, dynamic> json) {
     ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
     ..updatedAt = json['updatedAt'] as int?
-    ..ePayId = json['ePayId'] as String?;
+    ..ePayId = json['ePayId'] as String?
+    ..deletedAt = json['deletedAt'] as int?;
 }
 
 Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
@@ -79,6 +80,7 @@ Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
       'dry': instance.dry,
       'iron': instance.iron,
       'note': instance.note,
+      'deletedAt': instance.deletedAt,
     };
 
 LaundryDocument _$LaundryDocumentFromJson(Map<String, dynamic> json) {
