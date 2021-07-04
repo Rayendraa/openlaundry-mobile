@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:openlaundry/google_sign_in_class.dart';
 import 'package:openlaundry/model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
 class TableDetail<T> {
-  TableDetail({this.tableName, this.fromJson, this.type});
+  TableDetail({this.tableName, this.fromJson, this.create, this.type});
 
   String? tableName;
   T Function(Map<String, dynamic> json)? fromJson;
+  T Function()? create;
   Type? type;
 }
 
@@ -18,19 +21,31 @@ TableDetail? decodeTableStr<T>() {
   switch (T) {
     case Customer:
       return TableDetail<Customer>(
-          tableName: 'customers', fromJson: Customer.fromJson, type: Customer);
+          tableName: 'customers',
+          fromJson: Customer.fromJson,
+          create: Customer.create,
+          type: Customer);
 
     case LaundryRecord:
       return TableDetail<LaundryRecord>(
           tableName: 'laundryrecords',
           fromJson: LaundryRecord.fromJson,
+          create: LaundryRecord.create,
           type: LaundryRecord);
 
     case LaundryDocument:
       return TableDetail<LaundryDocument>(
           tableName: 'laundrydocuments',
           fromJson: LaundryDocument.fromJson,
+          create: LaundryDocument.create,
           type: LaundryDocument);
+
+    case Expense:
+      return TableDetail<Expense>(
+          tableName: 'expenses',
+          fromJson: Expense.fromJson,
+          create: Expense.create,
+          type: Expense);
 
     default:
       return null;
@@ -40,11 +55,26 @@ TableDetail? decodeTableStr<T>() {
 class AppState with ChangeNotifier {
   int selectedPage = 0;
   String? title = 'Dashboard';
+
+  // TABLES
   List<Customer>? customers;
   List<LaundryRecord>? laundryRecords;
   List<LaundryDocument>? laundryDocuments;
+  List<Expense>? expenses;
+
   String? email;
   String? accessToken;
+  String? idToken;
+
+  String? createdAt;
+  String? updatedAt;
+
+  String? baseUrl;
+
+  setBaseUrl(String? newBaseUrl) {
+    baseUrl = newBaseUrl;
+    notifyListeners();
+  }
 
   setSelectedPage(int newSelectedPage) {
     selectedPage = newSelectedPage;
@@ -63,6 +93,21 @@ class AppState with ChangeNotifier {
 
   setAccessToken(String? newAccessToken) {
     accessToken = newAccessToken;
+    notifyListeners();
+  }
+
+  setIdToken(String? newIdToken) {
+    idToken = newIdToken;
+    notifyListeners();
+  }
+
+  setCreatedAt(String? newCreatedAt) {
+    createdAt = createdAt;
+    notifyListeners();
+  }
+
+  setUpdatedAt(String? newUpdatedAt) {
+    updatedAt = updatedAt;
     notifyListeners();
   }
 
@@ -137,6 +182,10 @@ class AppState with ChangeNotifier {
               case LaundryDocument:
                 laundryDocuments = decodedItems as List<LaundryDocument>;
                 break;
+
+              case Expense:
+                expenses = decodedItems as List<Expense>;
+                break;
             }
 
             prefs.setString(
@@ -188,6 +237,10 @@ class AppState with ChangeNotifier {
           laundryDocuments = decodedItems as List<LaundryDocument>;
           break;
 
+        case Expense:
+          expenses = decodedItems as List<Expense>;
+          break;
+
         default:
           print('Type irrelevant');
       }
@@ -197,15 +250,28 @@ class AppState with ChangeNotifier {
     }
   }
 
-  void initState() async {
+  Future<void> initState() async {
     print('\nInitializing state\n');
 
     await initGeneric<Customer>();
     await initGeneric<LaundryRecord>();
     await initGeneric<LaundryDocument>();
+    await initGeneric<Expense>();
 
     //  Get email and accessToken
     final prefs = await SharedPreferences.getInstance();
+
+    // Get base URL
+    final prefsBaseUrl = prefs.getString("baseUrl");
+
+    if (baseUrl != null) {
+      baseUrl = prefsBaseUrl;
+    } else {
+      final newBaseUrl =
+          dotenv.env['BASE_URL'] ?? 'https://openlaundry.vmasdani.my.id';
+      prefs.setString("baseUrl", newBaseUrl);
+      baseUrl = newBaseUrl;
+    }
 
     // Login
     googleSignIn.onCurrentUserChanged.listen((account) {
@@ -214,7 +280,7 @@ class AppState with ChangeNotifier {
 
       if (account?.email != null) {
         email = account?.email;
-        prefs.setString('email', account!.email);
+        // prefs.setString('email', account!.email);
       }
     });
 
@@ -226,7 +292,40 @@ class AppState with ChangeNotifier {
 
       if (tok?.accessToken != null) {
         accessToken = tok?.accessToken;
-        prefs.setString('accessToken', tok!.accessToken!);
+        // prefs.setString('accessToken', tok!.accessToken!);
+      }
+
+      if (tok?.idToken != null) {
+        idToken = tok?.idToken;
+        // prefs.setString('accessToken', tok!.accessToken!);
+      }
+
+      // Fetch initial backup data
+      print('[tok] ${tok?.idToken}, [email] ${email}');
+
+      if (tok?.idToken != null && email != null) {
+        try {
+          final res = await http.get(
+              Uri.parse(
+                '$baseUrl/search-email?email=${Uri.encodeComponent(email ?? '')}',
+              ),
+              headers: {'authorization': tok?.idToken ?? ''});
+
+          if (res.statusCode != HttpStatus.ok) throw res.body;
+
+          print('[Got email]: ${res.body}');
+
+          final jsonInfo = jsonDecode(res.body);
+
+          try {
+            createdAt = jsonInfo['createdAt'];
+            updatedAt = jsonInfo['updatedAt'];
+          } catch (e) {
+            print('[Decode jsonInfo error] $e');
+          }
+        } catch (e) {
+          print(e);
+        }
       }
     });
 
@@ -261,7 +360,10 @@ class AppState with ChangeNotifier {
         final i = decodedItems.indexWhere((itemX) => itemX.uuid == uuid);
 
         if (i != -1) {
-          decodedItems.removeAt(i);
+          // decodedItems.removeAt(i);
+
+          // No longer remove items, but just add deletedAt
+          decodedItems[i].deletedAt = DateTime.now().millisecondsSinceEpoch;
         }
 
         if (T == Customer) {

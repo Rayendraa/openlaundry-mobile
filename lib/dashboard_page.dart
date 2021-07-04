@@ -62,7 +62,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   margin: EdgeInsets.only(top: 10),
                   child: Consumer<AppState>(builder: (ctx, state, child) {
                     return Text(
-                      'Documents (${state.laundryDocuments?.length ?? 0} records)',
+                      'Documents (${state.laundryDocuments?.where((laundryDocument) => (laundryDocument.date ?? 0) >= _filterDateFrom.millisecondsSinceEpoch && (laundryDocument.date ?? 0) <= _filterDateTo.millisecondsSinceEpoch && laundryDocument.deletedAt == null)?.length ?? 0} records)',
                       style: TextStyle(fontSize: 18),
                     );
                   }),
@@ -98,30 +98,30 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   ),
                 ),
-                Container(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          child: Text('Filter Date'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.centerRight,
-                          child: Switch(
-                            onChanged: (val) {
-                              setState(() {
-                                _filterDate = val;
-                              });
-                            },
-                            value: _filterDate,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                // Container(
+                //   child: Row(
+                //     children: [
+                //       Expanded(
+                //         child: Container(
+                //           child: Text('Filter Date'),
+                //         ),
+                //       ),
+                //       Expanded(
+                //         child: Container(
+                //           alignment: Alignment.centerRight,
+                //           child: Switch(
+                //             onChanged: (val) {
+                //               setState(() {
+                //                 _filterDate = val;
+                //               });
+                //             },
+                //             value: _filterDate,
+                //           ),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
                 ...(_filterDate
                     ? [
                         Container(
@@ -211,14 +211,17 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 .millisecondsSinceEpoch &&
                                         (laundryDocument.date ?? 0) <=
                                             _filterDateTo
-                                                .millisecondsSinceEpoch)
+                                                .millisecondsSinceEpoch &&
+                                        laundryDocument.deletedAt == null)
                                     .map((laundryDocument) {
                                       final foundLaundryRecords = state
                                               .laundryRecords
                                               ?.where((laundryRecord) =>
                                                   laundryRecord
-                                                      .laundryDocumentUuid ==
-                                                  laundryDocument.uuid) ??
+                                                          .laundryDocumentUuid ==
+                                                      laundryDocument.uuid &&
+                                                  laundryRecord.deletedAt ==
+                                                      null) ??
                                           [];
 
                                       return foundLaundryRecords;
@@ -229,12 +232,14 @@ class _DashboardPageState extends State<DashboardPage> {
 
                             final unresolvedLaundries = foundLaundryRecords
                                 .where((laundryRecord) =>
-                                    laundryRecord.received == null)
+                                    laundryRecord.received == null &&
+                                    laundryRecord.deletedAt == null)
                                 .length;
 
                             final income = foundLaundryRecords
                                 .where((laundryRecord) =>
-                                    laundryRecord.received != null)
+                                    laundryRecord.received != null &&
+                                    laundryRecord.deletedAt == null)
                                 .fold(
                                     0,
                                     (acc, laundryRecord) =>
@@ -317,10 +322,18 @@ class _DashboardPageState extends State<DashboardPage> {
                               state.laundryDocuments?.reversed ??
                                   Iterable.empty())
                           .where((laundryDocument) =>
-                              laundryDocument.name?.toLowerCase().contains(
-                                  _laundryDocumentSearchController.text
-                                      .toLowerCase()) ??
-                              false)
+
+                              // Filter by name
+                              (laundryDocument.name?.toLowerCase().contains(
+                                      _laundryDocumentSearchController.text
+                                          .toLowerCase()) ??
+                                  false) &&
+                              (laundryDocument.date ?? 0) >=
+                                  _filterDateFrom.millisecondsSinceEpoch &&
+                              (laundryDocument.date ?? 0) <=
+                                  _filterDateTo.millisecondsSinceEpoch &&
+                              // Filter by deletedAt
+                              laundryDocument.deletedAt == null)
                           .toList()
                           .asMap()
                           .map((i, laundryDocument) => MapEntry(
@@ -388,8 +401,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                             final income = state.laundryRecords
                                                 ?.where((laundryRecord) =>
                                                     laundryRecord
-                                                        .laundryDocumentUuid ==
-                                                    laundryDocument.uuid)
+                                                            .laundryDocumentUuid ==
+                                                        laundryDocument.uuid &&
+                                                    laundryRecord.deletedAt ==
+                                                        null &&
+                                                    laundryRecord.received !=
+                                                        null)
                                                 .map((laundryRecord) =>
                                                     laundryRecord.price ?? 0)
                                                 .fold(
@@ -409,6 +426,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                             );
                                           },
                                         ),
+                                        Container(
+                                            child: Text(
+                                                '${laundryDocument.deletedAt}')),
                                         Divider(),
                                         Container(
                                           alignment: Alignment.centerLeft,
@@ -420,15 +440,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                               .laundryRecords
                                               ?.where((laundryRecord) =>
                                                   laundryRecord
-                                                      .laundryDocumentUuid ==
-                                                  laundryDocument.uuid);
+                                                          .laundryDocumentUuid ==
+                                                      laundryDocument.uuid &&
+                                                  laundryRecord.deletedAt ==
+                                                      null);
 
                                           final successfulLaundries =
                                               foundLaundryRecords
                                                       ?.where((laundryRecord) =>
                                                           laundryRecord
-                                                              .received !=
-                                                          null)
+                                                                  .received !=
+                                                              null &&
+                                                          laundryRecord
+                                                                  .deletedAt ==
+                                                              null)
                                                       .length ??
                                                   0;
 

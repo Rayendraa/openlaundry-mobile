@@ -55,11 +55,13 @@ class _CustomersPageState extends State<CustomersPage> {
                       .where((customer) =>
                           '${customer.name}${customer.phone}${customer.address}'
                               .toLowerCase()
-                              .contains(_customerSearch.text.toLowerCase()))
+                              .contains(_customerSearch.text.toLowerCase()) &&
+                          customer.deletedAt == null)
                       .map((customer) {
                     final totalLaundries = state.laundryRecords
                             ?.where((laundryRecord) =>
-                                laundryRecord.customerUuid == customer.uuid)
+                                laundryRecord.customerUuid == customer.uuid &&
+                                laundryRecord.deletedAt == null)
                             .length ??
                         0;
 

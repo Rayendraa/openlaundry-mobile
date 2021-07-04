@@ -11,13 +11,14 @@ BaseModel _$BaseModelFromJson(Map<String, dynamic> json) {
     uuid: json['uuid'] as String?,
     createdAt: json['createdAt'] as int?,
     updatedAt: json['updatedAt'] as int?,
-  );
+  )..deletedAt = json['deletedAt'] as int?;
 }
 
 Map<String, dynamic> _$BaseModelToJson(BaseModel instance) => <String, dynamic>{
       'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
+      'deletedAt': instance.deletedAt,
     };
 
 Customer _$CustomerFromJson(Map<String, dynamic> json) {
@@ -28,13 +29,15 @@ Customer _$CustomerFromJson(Map<String, dynamic> json) {
   )
     ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
-    ..updatedAt = json['updatedAt'] as int?;
+    ..updatedAt = json['updatedAt'] as int?
+    ..deletedAt = json['deletedAt'] as int?;
 }
 
 Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
       'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
+      'deletedAt': instance.deletedAt,
       'name': instance.name,
       'phone': instance.phone,
       'address': instance.address,
@@ -58,8 +61,8 @@ LaundryRecord _$LaundryRecordFromJson(Map<String, dynamic> json) {
     ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
     ..updatedAt = json['updatedAt'] as int?
-    ..ePayId = json['ePayId'] as String?
-    ..deletedAt = json['deletedAt'] as int?;
+    ..deletedAt = json['deletedAt'] as int?
+    ..ePayId = json['ePayId'] as String?;
 }
 
 Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
@@ -67,6 +70,7 @@ Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
       'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
+      'deletedAt': instance.deletedAt,
       'customerUuid': instance.customerUuid,
       'laundryDocumentUuid': instance.laundryDocumentUuid,
       'weight': instance.weight,
@@ -80,7 +84,6 @@ Map<String, dynamic> _$LaundryRecordToJson(LaundryRecord instance) =>
       'dry': instance.dry,
       'iron': instance.iron,
       'note': instance.note,
-      'deletedAt': instance.deletedAt,
     };
 
 LaundryDocument _$LaundryDocumentFromJson(Map<String, dynamic> json) {
@@ -90,7 +93,8 @@ LaundryDocument _$LaundryDocumentFromJson(Map<String, dynamic> json) {
   )
     ..uuid = json['uuid'] as String?
     ..createdAt = json['createdAt'] as int?
-    ..updatedAt = json['updatedAt'] as int?;
+    ..updatedAt = json['updatedAt'] as int?
+    ..deletedAt = json['deletedAt'] as int?;
 }
 
 Map<String, dynamic> _$LaundryDocumentToJson(LaundryDocument instance) =>
@@ -98,6 +102,54 @@ Map<String, dynamic> _$LaundryDocumentToJson(LaundryDocument instance) =>
       'uuid': instance.uuid,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
+      'deletedAt': instance.deletedAt,
       'name': instance.name,
       'date': instance.date,
+    };
+
+Expense _$ExpenseFromJson(Map<String, dynamic> json) {
+  return Expense(
+    name: json['name'] as String?,
+    date: json['date'] as int?,
+    amount: (json['amount'] as num?)?.toDouble(),
+  )
+    ..uuid = json['uuid'] as String?
+    ..createdAt = json['createdAt'] as int?
+    ..updatedAt = json['updatedAt'] as int?
+    ..deletedAt = json['deletedAt'] as int?;
+}
+
+Map<String, dynamic> _$ExpenseToJson(Expense instance) => <String, dynamic>{
+      'uuid': instance.uuid,
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
+      'deletedAt': instance.deletedAt,
+      'name': instance.name,
+      'date': instance.date,
+      'amount': instance.amount,
+    };
+
+BackupRecord _$BackupRecordFromJson(Map<String, dynamic> json) {
+  return BackupRecord(
+    id: json['id'] as int?,
+    email: json['email'] as String?,
+    createdAt: json['createdAt'] as String?,
+    updatedAt: json['updatedAt'] as String?,
+    customers: json['customers'] as String?,
+    laundryDocuments: json['laundryDocuments'] as String?,
+    laundryRecords: json['laundryRecords'] as String?,
+    expenses: json['expenses'] as String?,
+  );
+}
+
+Map<String, dynamic> _$BackupRecordToJson(BackupRecord instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'email': instance.email,
+      'createdAt': instance.createdAt,
+      'updatedAt': instance.updatedAt,
+      'customers': instance.customers,
+      'laundryDocuments': instance.laundryDocuments,
+      'laundryRecords': instance.laundryRecords,
+      'expenses': instance.expenses,
     };

@@ -111,7 +111,8 @@ class _LaundryRecordAddState extends State<LaundryRecordAdd> {
                       builder: (ctx, state, child) {
                         final foundCustomer = state.customers?.firstWhereOrNull(
                             (customer) =>
-                                customer.uuid == _laundryRecord?.customerUuid);
+                                customer.uuid == _laundryRecord?.customerUuid &&
+                                customer.deletedAt == null);
 
                         return Container(
                           alignment: Alignment.centerLeft,

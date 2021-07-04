@@ -46,7 +46,8 @@ class _CustomerSelectState extends State<CustomerSelect> {
                   .where((customer) =>
                       '${customer.name}${customer.phone}${customer.address}'
                           .toLowerCase()
-                          .contains(_customerSearch.text.toLowerCase()))
+                          .contains(_customerSearch.text.toLowerCase()) &&
+                      customer.deletedAt == null)
                   .map((customer) {
                 return Column(
                   children: [

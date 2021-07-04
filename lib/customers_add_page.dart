@@ -174,107 +174,122 @@ class _CustomersAddPageState extends State<CustomersAddPage> {
                     ),
                   ),
                   Divider(),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 20),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Laundries',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Consumer<AppState>(
-                    builder: (ctx, state, child) {
-                      return Column(
-                        children: state.laundryRecords
-                                ?.where((laundryRecord) =>
-                                    laundryRecord.customerUuid ==
-                                    _customer?.uuid)
-                                .map((laundryRecord) => Container(
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                                '${NumberFormat.simpleCurrency(locale: 'id-ID').format(laundryRecord.price ?? 0)}'),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                                '${laundryRecord.weight ?? 0} kg'),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Row(
-                                              children: [
-                                                Expanded(child: Text('Start')),
-                                                Expanded(
-                                                  child: Text(laundryRecord
-                                                              .start !=
-                                                          null
-                                                      ? DateFormat.yMMMEd()
-                                                          .add_jm()
-                                                          .format(DateTime
-                                                              .fromMillisecondsSinceEpoch(
-                                                                  laundryRecord
-                                                                          .start ??
-                                                                      0))
-                                                      : ''),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Row(
-                                              children: [
-                                                Expanded(child: Text('Done')),
-                                                Expanded(
-                                                  child: Text(laundryRecord
-                                                              .done !=
-                                                          null
-                                                      ? DateFormat.yMMMEd()
-                                                          .add_jm()
-                                                          .format(DateTime
-                                                              .fromMillisecondsSinceEpoch(
-                                                                  laundryRecord
-                                                                          .done ??
-                                                                      0))
-                                                      : ''),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            alignment: Alignment.centerLeft,
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                    child: Text('Received')),
-                                                Expanded(
-                                                  child: Text(laundryRecord
-                                                              .received !=
-                                                          null
-                                                      ? DateFormat.yMMMEd()
-                                                          .add_jm()
-                                                          .format(DateTime
-                                                              .fromMillisecondsSinceEpoch(
-                                                                  laundryRecord
-                                                                          .received ??
-                                                                      0))
-                                                      : ''),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Divider()
-                                        ],
-                                      ),
-                                    ))
-                                .toList() ??
-                            [],
-                      );
-                    },
-                  )
+                  ...(_customer?.uuid != null
+                      ? [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Laundries',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Consumer<AppState>(
+                            builder: (ctx, state, child) {
+                              return Column(
+                                children: state.laundryRecords
+                                        ?.where((laundryRecord) =>
+                                            laundryRecord.customerUuid ==
+                                                _customer?.uuid &&
+                                            laundryRecord.deletedAt == null)
+                                        .map((laundryRecord) => Container(
+                                              child: Column(
+                                                children: [
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Text(
+                                                        '${NumberFormat.simpleCurrency(locale: 'id-ID').format(laundryRecord.price ?? 0)}'),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Text(
+                                                        '${laundryRecord.weight ?? 0} kg'),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                            child:
+                                                                Text('Start')),
+                                                        Expanded(
+                                                          child: Text(laundryRecord
+                                                                      .start !=
+                                                                  null
+                                                              ? DateFormat
+                                                                      .yMMMEd()
+                                                                  .add_jm()
+                                                                  .format(DateTime
+                                                                      .fromMillisecondsSinceEpoch(
+                                                                          laundryRecord.start ??
+                                                                              0))
+                                                              : ''),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                            child:
+                                                                Text('Done')),
+                                                        Expanded(
+                                                          child: Text(laundryRecord
+                                                                      .done !=
+                                                                  null
+                                                              ? DateFormat
+                                                                      .yMMMEd()
+                                                                  .add_jm()
+                                                                  .format(DateTime
+                                                                      .fromMillisecondsSinceEpoch(
+                                                                          laundryRecord.done ??
+                                                                              0))
+                                                              : ''),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    alignment:
+                                                        Alignment.centerLeft,
+                                                    child: Row(
+                                                      children: [
+                                                        Expanded(
+                                                            child: Text(
+                                                                'Received')),
+                                                        Expanded(
+                                                          child: Text(laundryRecord
+                                                                      .received !=
+                                                                  null
+                                                              ? DateFormat
+                                                                      .yMMMEd()
+                                                                  .add_jm()
+                                                                  .format(DateTime
+                                                                      .fromMillisecondsSinceEpoch(
+                                                                          laundryRecord.received ??
+                                                                              0))
+                                                              : ''),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Divider()
+                                                ],
+                                              ),
+                                            ))
+                                        .toList() ??
+                                    [],
+                              );
+                            },
+                          )
+                        ]
+                      : []),
                 ],
               ),
             ),

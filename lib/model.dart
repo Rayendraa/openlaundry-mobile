@@ -11,6 +11,7 @@ class BaseModel {
   String? uuid;
   int? createdAt;
   int? updatedAt;
+  int? deletedAt;
 
   factory BaseModel.fromJson(Map<String, dynamic> json) =>
       _$BaseModelFromJson(json);
@@ -25,6 +26,7 @@ class Customer extends BaseModel {
   String? phone;
   String? address;
 
+  static Customer create() => Customer();
   static Customer fromJson(Map<String, dynamic> json) =>
       _$CustomerFromJson(json);
   Map<String, dynamic> toJson() => _$CustomerToJson(this);
@@ -59,8 +61,8 @@ class LaundryRecord extends BaseModel {
   bool? dry;
   bool? iron;
   String? note;
-  int? deletedAt;
 
+  static LaundryRecord create() => LaundryRecord();
   static LaundryRecord fromJson(Map<String, dynamic> json) =>
       _$LaundryRecordFromJson(json);
   Map<String, dynamic> toJson() => _$LaundryRecordToJson(this);
@@ -73,7 +75,48 @@ class LaundryDocument extends BaseModel {
   String? name;
   int? date;
 
+  static LaundryDocument create() => LaundryDocument();
   static LaundryDocument fromJson(Map<String, dynamic> json) =>
       _$LaundryDocumentFromJson(json);
   Map<String, dynamic> toJson() => _$LaundryDocumentToJson(this);
+}
+
+@JsonSerializable()
+class Expense extends BaseModel {
+  Expense({this.name, this.date, this.amount});
+
+  String? name;
+  int? date;
+  double? amount;
+
+  static Expense create() => Expense();
+  static Expense fromJson(Map<String, dynamic> json) => _$ExpenseFromJson(json);
+  Map<String, dynamic> toJson() => _$ExpenseToJson(this);
+}
+
+@JsonSerializable()
+class BackupRecord {
+  BackupRecord(
+      {this.id,
+      this.email,
+      this.createdAt,
+      this.updatedAt,
+      this.customers,
+      this.laundryDocuments,
+      this.laundryRecords,
+      this.expenses});
+
+  int? id;
+  String? email;
+  String? createdAt;
+  String? updatedAt;
+  String? customers;
+  String? laundryDocuments;
+  String? laundryRecords;
+  String? expenses;
+
+  static BackupRecord create() => BackupRecord();
+  static BackupRecord fromJson(Map<String, dynamic> json) =>
+      _$BackupRecordFromJson(json);
+  Map<String, dynamic> toJson() => _$BackupRecordToJson(this);
 }

@@ -4,9 +4,12 @@ import 'package:openlaundry/app_state.dart';
 import 'package:openlaundry/google_sign_in_class.dart';
 import 'package:openlaundry/main_component.dart';
 import 'package:openlaundry/model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: '.env');
+
   runApp(ChangeNotifierProvider(
     create: (context) => AppState(),
     child: MyApp(),
@@ -37,8 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     final state = context.read<AppState>();
-
-    
 
     state.initState();
     super.initState();
