@@ -426,9 +426,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                             );
                                           },
                                         ),
-                                        Container(
-                                            child: Text(
-                                                '${laundryDocument.deletedAt}')),
+                                        // Container(
+                                        //     child: Text(
+                                        //         '${laundryDocument.deletedAt}')),
                                         Divider(),
                                         Container(
                                           alignment: Alignment.centerLeft,
