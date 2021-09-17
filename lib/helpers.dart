@@ -40,7 +40,7 @@ String makeReadableDateString(DateTime date) {
 }
 
 String makeDateString(DateTime date) {
-  String m = (date.month + 1) < 10 ? '0${date.month}' : '${date.month}';
+  String m = (date.month) < 10 ? '0${date.month}' : '${date.month}';
   String d = (date.day) < 10 ? '0${date.day}' : '${date.day}';
 
   return '${date.year}-${m}-${d}';
